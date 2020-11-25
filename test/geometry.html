@@ -16,6 +16,23 @@
 
 <script type="module">
 import * as THREE from '../lib/three.module.js';
+
+class CustomSinCurve extends THREE.Curve {
+    constructor( scale = 1 ) {
+        super();
+        this.scale = scale;
+    }
+
+    getPoint( t, optionalTarget = new THREE.Vector3() ) {
+
+        const tx = t * 3 - 1.5;
+        const ty = Math.sin( 2 * Math.PI * t );
+        const tz = 0;
+
+        return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
+    }
+}
+
 let scene = new THREE.Scene();
 // let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
 let renderer = new THREE.WebGLRenderer();
@@ -38,7 +55,12 @@ drawAxes(scene);
 // drawPlane(scene, material);
 // drawSphere(scene, material);
 // drawCylinder(scene, material);
-drawTetra(scene, material);
+// drawTetra(scene, material);
+// drawOcta(scene, material);
+// drawIcosa(scene, material);
+// drawTorus(scene, material);
+// drawTorusKnot(scene, material);
+drawTube(scene, material);
 
 renderer.render(scene, camera);
 
@@ -80,6 +102,41 @@ function drawSphere(scene, material) {
     //      Math.PI / 2, Math.PI, Math.PI / 6, Math.PI / 2), material);
     scene.add(sphere);
     animate(sphere);
+}
+// 八面体
+function drawOcta(scene, material) {
+    let octa = new THREE.Mesh(new THREE.OctahedronGeometry(3), material);
+    scene.add(octa);
+    animate(octa);
+}
+// 十六面体
+function drawIcosa(scene, material) {
+    let icosa = new THREE.Mesh(new THREE.IcosahedronGeometry(3), material);
+    scene.add(icosa);
+    animate(icosa);
+}
+
+function drawTorus(scene, material) {
+    // let torus = new THREE.Mesh(new THREE.TorusGeometry(3, 1, 4, 8), material);
+    // let torus = new THREE.Mesh(new THREE.TorusGeometry(3, 1, 12, 18), material);
+    let torus = new THREE.Mesh(new THREE.TorusGeometry(3, 1, 4, 18, Math.PI / 3 * 2), material);
+    scene.add(torus);
+    animate(torus);
+}
+
+function drawTorusKnot(scene, material) {
+    let torus = new THREE.Mesh(new THREE.TorusKnotGeometry(2, 0.5, 64, 16, 1, 5), material);
+    scene.add(torus);
+    animate(torus);
+}
+
+
+
+function drawTube(scene, material) {
+    let path = new CustomSinCurve(3);
+    let tube = new THREE.Mesh(new THREE.TubeGeometry(path, 16, 2, 8, false), material);
+    scene.add(tube);
+    animate(tube);
 }
 
 function drawAxes(scene) {
