@@ -37,7 +37,8 @@ drawAxes(scene);
 // drawCube(scene, material);
 // drawPlane(scene, material);
 // drawSphere(scene, material);
-drawCylinder(scene, material);
+// drawCylinder(scene, material);
+drawTetra(scene, material);
 
 renderer.render(scene, camera);
 
@@ -47,6 +48,12 @@ function drawCylinder(scene, material) {
     let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 3, 4, 18, 3, true), material);
     scene.add(cylinder);
     animate(cylinder);
+}
+
+function drawTetra(scene, material) {
+    let tetra = new THREE.Mesh(new THREE.TetrahedronGeometry(3), material);
+    scene.add(tetra);
+    animate(tetra);
 }
 
 function drawCube(scene, material) {
