@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>立体几何</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+import * as THREE from '../lib/three.module.js';
+let scene = new THREE.Scene();
+// let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+let renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+let camera = new THREE.OrthographicCamera(-5, 5, 3.75, -3.75, 0.1, 100);
+camera.position.set(25, 25, 25);
+camera.lookAt(0, 0, 0);
+scene.add(camera);
+
+let material = new THREE.MeshBasicMaterial({
+    color: 0x00ffff,
+    wireframe: true
+});
+
+drawAxes(scene);
+
+renderer.render(scene, camera);
+
+function drawAxes(scene) {
+    let x = new THREE.Geometry();
+    x.vertices.push(new THREE.Vector3(0, 0, 0));
+    x.vertices.push(new THREE.Vector3(3, 0, 0));
+
+    let xMat = new THREE.LineBasicMaterial({
+        color: 0xff0000
+    });
+    let xAxis = new THREE.Line(x, xMat);
+    scene.add(xAxis);
+
+    let y = new THREE.Geometry();
+    y.vertices.push(new THREE.Vector3(0, 0, 0));
+    y.vertices.push(new THREE.Vector3(0, 3, 0));
+
+    let yMat = new THREE.LineBasicMaterial({
+        color: 0x00ff00
+    });
+    let yAxis = new THREE.Line(y, yMat);
+    scene.add(yAxis);
+
+    let z = new THREE.Geometry();
+    z.vertices.push(new THREE.Vector3(0, 0, 0));
+    z.vertices.push(new THREE.Vector3(0, 0, 3));
+
+    let zMat = new THREE.LineBasicMaterial({
+        color: 0x0000ff
+    });
+    let zAxis = new THREE.Line(z, zMat);
+    scene.add(zAxis);
+}
+</script>
+</body>
+</html>
