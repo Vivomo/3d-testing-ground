@@ -35,7 +35,8 @@ let material = new THREE.MeshBasicMaterial({
 
 drawAxes(scene);
 // drawCube(scene, material);
-drawPlane(scene, material);
+// drawPlane(scene, material);
+drawSphere(scene, material);
 
 renderer.render(scene, camera);
 
@@ -47,6 +48,22 @@ function drawCube(scene, material) {
 function drawPlane(scene, material) {
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 4), material);
     scene.add(plane);
+}
+
+function drawSphere(scene, material) {
+    // let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6), material);
+    // let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6,
+    //      0, Math.PI * 2, Math.PI / 6, Math.PI / 2), material);
+    let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 16,
+         Math.PI / 2, Math.PI, Math.PI / 6, Math.PI / 2), material);
+    // let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6,
+    //      Math.PI / 6, Math.PI / 3), material);
+    // let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6,
+    //      0, Math.PI * 2, Math.PI / 6, Math.PI / 3), material);
+    // let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6,
+    //      Math.PI / 2, Math.PI, Math.PI / 6, Math.PI / 2), material);
+    scene.add(sphere);
+    animate(sphere);
 }
 
 function drawAxes(scene) {
@@ -80,6 +97,18 @@ function drawAxes(scene) {
     let zAxis = new THREE.Line(z, zMat);
     scene.add(zAxis);
 }
+
+function animate(cube){
+    let loop = () => {
+        requestAnimationFrame(loop);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+    };
+    loop();
+}
+
 </script>
 </body>
 </html>
