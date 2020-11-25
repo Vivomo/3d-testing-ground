@@ -34,13 +34,19 @@ let material = new THREE.MeshBasicMaterial({
 });
 
 drawAxes(scene);
-drawCube(scene, material);
+// drawCube(scene, material);
+drawPlane(scene, material);
 
 renderer.render(scene, camera);
 
 function drawCube(scene, material) {
     let cube = new THREE.Mesh(new THREE.CubeGeometry(1, 2, 3, 2, 2, 3), material);
     scene.add(cube);
+}
+
+function drawPlane(scene, material) {
+    let plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 4), material);
+    scene.add(plane);
 }
 
 function drawAxes(scene) {
