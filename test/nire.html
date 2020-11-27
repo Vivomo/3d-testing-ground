@@ -11,6 +11,7 @@
 <body>
 <script type="module">
     import * as THREE from '../lib/three.module.js';
+    import {OrbitControls} from '../lib/OrbitControls.js';
 
     let scene = new THREE.Scene();
     let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
@@ -41,6 +42,9 @@
         side: THREE.DoubleSide,
         // wireframe: true
     });
+
+    let controls = new OrbitControls( camera, renderer.domElement );
+    controls.update();
 
     drawAxes(scene);
     drawCylinder(scene, material);
