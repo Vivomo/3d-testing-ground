@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>Nire Map</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script type="module">
+    import * as THREE from '../lib/three.module.js';
+
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+    let renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.appendChild(renderer.domElement);
+
+    camera.position.set(0, 30, 30);
+    camera.lookAt(0, 0, 0);
+    console.log(camera.position)
+    let cfg = {
+        ringInnerWidth: 18,
+        ringOuterWidth: 20,
+        ringHeight: 2,
+    };
+
+    // let light = new THREE.AmbientLight(0xffffff);
+    // let light = new THREE.PointLight(0xffffff, 2, 100);
+    let light = new THREE.DirectionalLight();
+    light.position.set(-50, 50, 30);
+    scene.add(light);
+
+    // let material = new THREE.MeshBasicMaterial({
+    let material = new THREE.MeshLambertMaterial({
+        // color: 0x00ffff,
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        // wireframe: true
+    });
+
+    drawAxes(scene);
+    drawCylinder(scene, material);
+    drawRing(scene, material);
+    drawCube(scene, material);
+    drawSphere(scene, material);
+    renderer.render(scene, camera);
+
+    function drawCylinder(scene, material) {
+        let cylinder = new THREE.Mesh(
+            new THREE.CylinderGeometry(cfg.ringOuterWidth, cfg.ringOuterWidth, cfg.ringHeight, 128, 3, true),
+            material);
+        let cylinder2 = new THREE.Mesh(
+            new THREE.CylinderGeometry(cfg.ringInnerWidth, cfg.ringInnerWidth, cfg.ringHeight, 128, 3, true),
+            material);
+        // let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 3, 4, 18, 3), material);
+        // let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 3, 4, 18, 3, true), material);
+        scene.add(cylinder);
+        scene.add(cylinder2);
+        // animate(cylinder, cylinder2);
+    }
+
+    function drawSphere(scene, material) {
+        let sphere = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), material);
+        scene.add(sphere);
+        animate(sphere);
+    }
+
+    function drawRing(scene, material) {
+        let ring = new THREE.Mesh(new THREE.RingGeometry(cfg.ringInnerWidth, cfg.ringOuterWidth, 128), material);
+        ring.position.y = cfg.ringHeight / 2;
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+    }
+
+    function drawCube(scene, material) {
+        let cube = new THREE.Mesh(new THREE.CubeGeometry(4, cfg.ringHeight, 80), material);
+        cube.position.z = 58;
+        scene.add(cube);
+        // animate(cube);
+    }
+
+    function animate(...cubes){
+        let loop = () => {
+            requestAnimationFrame(loop);
+            for (let cube of cubes) {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+            }
+            renderer.render(scene, camera);
+        };
+        loop();
+    }
+
+    function drawAxes(scene) {
+        let x = new THREE.Geometry();
+        x.vertices.push(new THREE.Vector3(0, 0, 0));
+        x.vertices.push(new THREE.Vector3(300, 0, 0));
+
+        let xMat = new THREE.LineBasicMaterial({
+            color: 0xff0000
+        });
+        let xAxis = new THREE.Line(x, xMat);
+        scene.add(xAxis);
+
+        let y = new THREE.Geometry();
+        y.vertices.push(new THREE.Vector3(0, 0, 0));
+        y.vertices.push(new THREE.Vector3(0, 300, 0));
+
+        let yMat = new THREE.LineBasicMaterial({
+            color: 0x00ff00
+        });
+        let yAxis = new THREE.Line(y, yMat);
+        scene.add(yAxis);
+
+        let z = new THREE.Geometry();
+        z.vertices.push(new THREE.Vector3(0, 0, 0));
+        z.vertices.push(new THREE.Vector3(0, 0, 300));
+
+        let zMat = new THREE.LineBasicMaterial({
+            color: 0x0000ff
+        });
+        let zAxis = new THREE.Line(z, zMat);
+        scene.add(zAxis);
+    }
+</script>
+</body>
+</html>
