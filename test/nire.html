@@ -22,7 +22,6 @@
 
     camera.position.set(0, 30, 30);
     camera.lookAt(0, 0, 0);
-    console.log(camera.position)
     let cfg = {
         ringInnerWidth: 18,
         ringOuterWidth: 20,
@@ -31,9 +30,18 @@
 
     // let light = new THREE.AmbientLight(0xffffff);
     // let light = new THREE.PointLight(0xffffff, 2, 100);
+    //
+    // let pointLight = new THREE.PointLight(0xffffff, 100, 100);
+    // pointLight.position.set(30, 10, 0);
+    // scene.add(pointLight);
+
     let light = new THREE.DirectionalLight();
-    light.position.set(-50, 50, 30);
-    scene.add(light);
+    light.position.set(-50, 50, 0);
+
+    let light2 = new THREE.DirectionalLight();
+    light2.position.set(50, 50, 0);
+
+    scene.add(light, light2);
 
     // let material = new THREE.MeshBasicMaterial({
     let material = new THREE.MeshLambertMaterial({
@@ -60,10 +68,7 @@
         let cylinder2 = new THREE.Mesh(
             new THREE.CylinderGeometry(cfg.ringInnerWidth, cfg.ringInnerWidth, cfg.ringHeight, 128, 3, true),
             material);
-        // let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 3, 4, 18, 3), material);
-        // let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 3, 4, 18, 3, true), material);
-        scene.add(cylinder);
-        scene.add(cylinder2);
+        scene.add(cylinder, cylinder2);
         // animate(cylinder, cylinder2);
     }
 
