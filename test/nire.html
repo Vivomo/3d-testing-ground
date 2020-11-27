@@ -20,7 +20,7 @@
 
     document.body.appendChild(renderer.domElement);
 
-    camera.position.set(0, 30, 30);
+    camera.position.set(50, 50, 50);
     camera.lookAt(0, 0, 0);
     let cfg = {
         ringInnerWidth: 18,
@@ -36,10 +36,10 @@
     // scene.add(pointLight);
 
     let light = new THREE.DirectionalLight();
-    light.position.set(-50, 50, 0);
+    light.position.set(-80, 50, 50);
 
     let light2 = new THREE.DirectionalLight();
-    light2.position.set(50, 50, 0);
+    light2.position.set(80, 50, 50);
 
     scene.add(light, light2);
 
@@ -54,11 +54,12 @@
     let controls = new OrbitControls( camera, renderer.domElement );
     controls.update();
 
-    drawAxes(scene);
+    // drawAxes(scene);
     drawCylinder(scene, material);
     drawRing(scene, material);
     drawCube(scene, material);
     drawSphere(scene, material);
+    drawCubes(scene, material);
     renderer.render(scene, camera);
 
     function drawCylinder(scene, material) {
@@ -90,6 +91,33 @@
         cube.position.z = 58;
         scene.add(cube);
         // animate(cube);
+    }
+
+    function drawCubes(scene, material) {
+        for (let i = 0; i < 12; i++) {
+            let cube = new THREE.Mesh(new THREE.CubeGeometry(2, 5, 1), material);
+            cube.position.y = 4.5;
+            scene.add(cube);
+            animateCube(cube, i);
+        }
+
+        function animateCube(cube, index) {
+            cube.rotation.y = -Math.PI / 6 * index;
+            let x = -cfg.ringInnerWidth * Math.sin(cube.rotation.y);
+            let z = -cfg.ringInnerWidth * Math.cos(cube.rotation.y);
+            let frame = 60;
+            let startFrame = 0;
+            let loop = () => {
+                if (startFrame <= frame) {
+                    cube.position.x = x * startFrame / frame;
+                    cube.position.z = z * startFrame / frame;
+                    requestAnimationFrame(loop);
+                }
+                startFrame++;
+                renderer.render(scene, camera);
+            };
+            setTimeout(loop, index * 100);
+        }
     }
 
     function animate(...cubes){
