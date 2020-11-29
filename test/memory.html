@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <title>Memory</title>
     <style>
-        body { margin: 0; }
-        canvas { display: block; }
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -34,7 +39,7 @@
         },
 
         render() {
-            this.renderer.render(scene, camera);
+            this.renderer.render(this.scene, this.camera);
         },
 
         drawLine(...args) {
@@ -54,18 +59,43 @@
             this.drawLine(0, 0, 0, 0, 0, 300, 0x0000ff);
         },
 
+        createPhotoFrame(position, rotation, src) {
+            let material = new THREE.MeshLambertMaterial({
+                map: new THREE.TextureLoader().load(src),
+                color: 0xffffff,
+                side: THREE.DoubleSide,
+            });
+            let geometry = new THREE.PlaneGeometry(3.2, 1.8);
+            let plane = new THREE.Mesh(geometry, material);
+
+            plane.position.set(...position);
+            plane.rotation.set(...rotation);
+
+            this.scene.add(plane);
+        },
+
+        drawImg() {
+            this.createPhotoFrame([4, 4, 0], [0, 0, 0], '../img/test.jpg');
+        },
+
+        addLight() {
+            let light = new THREE.DirectionalLight();
+            light.position.set(30, 30, 30);
+
+            let light2 = new THREE.DirectionalLight();
+            light.position.set(-30, 30, 30);
+            this.scene.add(light, light2);
+        },
+
         init() {
             let scene = this.scene = new THREE.Scene();
             let camera = this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
             let renderer = this.renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
             camera.lookAt(0, 0, 0);
 
-            let light = new THREE.DirectionalLight();
-            light.position.set(0, 30, 30);
-            scene.add(light);
 
             let material = this.material = new THREE.MeshLambertMaterial({
                 color: 0xcdc6af,
@@ -77,8 +107,10 @@
 
             controls.update();
 
+            this.addLight();
             this.drawAxes(scene);
             this.drawCylinder(scene, material);
+            this.drawImg();
             this.render();
             this.animate();
         }
