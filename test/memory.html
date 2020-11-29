@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script type="module">
+    import * as THREE from '../lib/three.module.js';
+    import {OrbitControls} from '../lib/OrbitControls.js';
+
+    let App = {
+
+        drawCylinder() {
+            let {scene, material} = this;
+            let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(20, 20, 1, 128, 3), material);
+            scene.add(cylinder);
+        },
+
+        drawCube() {
+            let {scene, material} = this;
+            let cube = new THREE.Mesh(new THREE.CubeGeometry(4, 10, 80), material);
+            cube.position.z = 58;
+            scene.add(cube);
+        },
+
+        animate() {
+            requestAnimationFrame(this.animate.bind(this));
+            this.render();
+        },
+
+        render() {
+            this.renderer.render(scene, camera);
+        },
+
+        drawLine(...args) {
+            let [x, y, z, x1, y1, z1, color] = args;
+            let scene = this.scene;
+            let geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(x, y, z));
+            geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
+
+            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color}));
+            scene.add(line);
+        },
+
+        drawAxes() {
+            this.drawLine(0, 0, 0, 300, 0, 0, 0xff0000);
+            this.drawLine(0, 0, 0, 0, 300, 0, 0x00ff00);
+            this.drawLine(0, 0, 0, 0, 0, 300, 0x0000ff);
+        },
+
+        init() {
+            let scene = this.scene = new THREE.Scene();
+            let camera = this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+            let renderer = this.renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio( window.devicePixelRatio );
+            document.body.appendChild(renderer.domElement);
+            camera.lookAt(0, 0, 0);
+
+            let light = new THREE.DirectionalLight();
+            light.position.set(0, 30, 30);
+            scene.add(light);
+
+            let material = this.material = new THREE.MeshLambertMaterial({
+                color: 0xcdc6af,
+                side: THREE.DoubleSide,
+            });
+
+            let controls = this.controls = new OrbitControls(camera, renderer.domElement);
+            camera.position.set(80, 80, 80);
+
+            controls.update();
+
+            this.drawAxes(scene);
+            this.drawCylinder(scene, material);
+            this.render();
+            this.animate();
+        }
+    };
+
+    App.init();
+
+</script>
+</body>
+</html>
