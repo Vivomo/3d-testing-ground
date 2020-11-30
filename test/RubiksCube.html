@@ -83,21 +83,9 @@
             requestAnimationFrame(this.render.bind(this));
         },
 
-        drawLine(...args) {
-            let [x, y, z, x1, y1, z1, color] = args;
-            let scene = this.scene;
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(x, y, z));
-            geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
-
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color}));
-            scene.add(line);
-        },
-
         drawAxes() {
-            this.drawLine(0, 0, 0, 300, 0, 0, 0xff0000);
-            this.drawLine(0, 0, 0, 0, 300, 0, 0x00ff00);
-            this.drawLine(0, 0, 0, 0, 0, 300, 0x0000ff);
+            let axesHelper = new THREE.AxesHelper(20);
+            this.scene.add( axesHelper );
         },
 
         initRender() {
@@ -120,12 +108,6 @@
             controls.update();
         },
 
-        addLight() {
-            let light = new THREE.DirectionalLight();
-            light.position.set(30, 30, 30);
-
-            this.scene.add(light);
-        },
 
         init() {
             this.scene = new THREE.Scene();
@@ -138,7 +120,6 @@
             this.initCamera();
             this.initControls();
 
-            // this.addLight();
             this.drawAxes();
             this.drawCube();
             this.render();
