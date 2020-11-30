@@ -54,16 +54,14 @@
         },
 
         drawCube() {
-
             let cubeMats = this.createCubeMat();
-
-            let {scene} = this;
             let cubes = [];
+            
             for (let i = 0; i < 27; i++) {
                 let cube = new THREE.Mesh(new THREE.BoxGeometry(this.size, this.size, this.size),
                     new THREE.MeshFaceMaterial(cubeMats[i]));
                 cubes.push(cube);
-                scene.add(cube);
+                this.scene.add(cube);
             }
 
             let offsetCfg = [['x', 1], ['x', -1], ['y', 1], ['y', -1], ['z', 1], ['z', -1]];
@@ -74,7 +72,6 @@
                         cubes[index].position[p] += this.size * value;
                 }
             }
-
         },
 
 
