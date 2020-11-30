@@ -23,6 +23,7 @@
         drawCylinder() {
             let {scene, material} = this;
             let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(20, 20, 1, 128, 3), material);
+            cylinder.position.y = -6;
             scene.add(cylinder);
         },
 
@@ -60,10 +61,11 @@
         },
 
         createPhotoFrame(position, rotation, src) {
-            let material = new THREE.MeshLambertMaterial({
+            let material = new THREE.MeshBasicMaterial({
                 map: new THREE.TextureLoader().load(src),
                 color: 0xffffff,
                 side: THREE.DoubleSide,
+                opacity: 0.4
             });
             let geometry = new THREE.PlaneGeometry(3.2, 1.8);
             let plane = new THREE.Mesh(geometry, material);
@@ -75,7 +77,17 @@
         },
 
         drawImg() {
-            this.createPhotoFrame([4, 4, 0], [0, 0, 0], '../img/test.jpg');
+            let w = 3.2;
+            let h = w / 16 * 9;
+            let baseH = 0;
+            this.createPhotoFrame([-w, baseH, -7], [0, 0, 0], '../img/test.jpg');
+            this.createPhotoFrame([0, baseH, -7], [0, 0, 0], '../img/test.jpg');
+            this.createPhotoFrame([w, baseH, -7], [0, 0, 0], '../img/test.jpg');
+            this.createPhotoFrame([0, baseH + h, -7], [0, 0, 0], '../img/test.jpg');
+            this.createPhotoFrame([w, baseH + 2 * h, -7], [0, 0, 0], '../img/test.jpg');
+
+            this.createPhotoFrame([-w, baseH + 2 * h, -10], [0, 0, 0], '../img/test.jpg');
+            this.createPhotoFrame([w, baseH + h, -10], [0, 0, 0], '../img/test.jpg');
         },
 
         addLight() {
@@ -84,17 +96,19 @@
 
             let light2 = new THREE.DirectionalLight();
             light.position.set(-30, 30, 30);
-            this.scene.add(light, light2);
+            this.scene.add(light);
         },
 
         init() {
             let scene = this.scene = new THREE.Scene();
             let camera = this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-            let renderer = this.renderer = new THREE.WebGLRenderer();
+            let renderer = this.renderer = new THREE.WebGLRenderer({
+                antialias: true,
+            });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
-            camera.lookAt(0, 0, 0);
+            camera.lookAt(0, 6, 0);
 
 
             let material = this.material = new THREE.MeshLambertMaterial({
@@ -103,13 +117,13 @@
             });
 
             let controls = this.controls = new OrbitControls(camera, renderer.domElement);
-            camera.position.set(80, 80, 80);
+            camera.position.set(60, 60, 60);
 
             controls.update();
 
             this.addLight();
-            this.drawAxes(scene);
-            this.drawCylinder(scene, material);
+            // this.drawAxes(scene);
+            this.drawCylinder();
             this.drawImg();
             this.render();
             this.animate();
