@@ -76,6 +76,10 @@
         },
 
         rotate(axis, direction, index) {
+            if (this.rotating) {
+                return;
+            }
+            this.rotating = true;
             let filterMap = {
                 0: value => value < -this.size,
                 1: value => Math.abs(value) < this.size / 2,
@@ -85,7 +89,7 @@
             let list = this.cubes.filter(cube => filter(cube.position[axis]));
             let finalRad = direction * Math.PI / 2;
             let startRad = 0;
-            let rotateRad = 0.05 * direction;
+            let rotateRad = 0.1 * direction;
             let rotateFunKey = `makeRotation${axis.toUpperCase()}`;
             let animate = () => {
                 startRad += rotateRad;
@@ -93,6 +97,7 @@
                     requestAnimationFrame(animate);
                 } else {
                     rotateRad = finalRad - startRad + rotateRad;
+                    this.rotating = false;
                 }
                 for (let cube of list) {
                     let _m = cube.matrix.clone()[rotateFunKey](rotateRad);
@@ -129,10 +134,19 @@
         },
 
         initControls() {
-            let controls = this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+            let controls = new OrbitControls(this.camera, this.renderer.domElement);
             controls.update();
         },
 
+        listenEvent() {
+            let kMap = ['x', 'y', 'z'];
+            document.body.addEventListener('keydown', (e) => {
+                let k = Number(e.key) - 1;
+                if (k >= 0 && k <= 8) {
+                    this.rotate(kMap[~~(k / 3)], e.altKey ? -1 : 1, k % 3);
+                }
+            })
+        },
 
         init() {
             this.scene = new THREE.Scene();
@@ -148,6 +162,8 @@
             this.drawAxes();
             this.drawCube();
             this.render();
+
+            this.listenEvent();
         }
     };
 
