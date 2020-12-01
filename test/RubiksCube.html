@@ -56,12 +56,12 @@
         drawCube() {
             let cubeMats = this.createCubeMat();
             let cubes = [];
-            
+            let {scene, size} = this;
             for (let i = 0; i < 27; i++) {
-                let cube = new THREE.Mesh(new THREE.BoxGeometry(this.size, this.size, this.size),
+                let cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size),
                     new THREE.MeshFaceMaterial(cubeMats[i]));
                 cubes.push(cube);
-                this.scene.add(cube);
+                scene.add(cube);
             }
 
             let offsetCfg = [['x', 1], ['x', -1], ['y', 1], ['y', -1], ['z', 1], ['z', -1]];
@@ -69,9 +69,37 @@
                 let surfaceIndex = this.indexMap[f];
                 let [p, value] = offsetCfg[f];
                 for (let index of surfaceIndex) {
-                        cubes[index].position[p] += this.size * value;
+                        cubes[index].position[p] += size * value * 1.1;
                 }
             }
+            this.cubes = cubes;
+        },
+
+        rotate(axis, direction, index) {
+            let filterMap = {
+                0: value => value < -this.size,
+                1: value => Math.abs(value) < this.size / 2,
+                2: value => value > this.size,
+            };
+            let filter = filterMap[index];
+            let list = this.cubes.filter(cube => filter(cube.position[axis]));
+            let finalRad = direction * Math.PI / 2;
+            let startRad = 0;
+            let rotateRad = 0.05 * direction;
+            let rotateFunKey = `makeRotation${axis.toUpperCase()}`;
+            let animate = () => {
+                startRad += rotateRad;
+                if (Math.abs(startRad) < Math.abs(finalRad)) {
+                    requestAnimationFrame(animate);
+                } else {
+                    rotateRad = finalRad - startRad + rotateRad;
+                }
+                for (let cube of list) {
+                    let _m = cube.matrix.clone()[rotateFunKey](rotateRad);
+                    cube.applyMatrix4(_m);
+                }
+            };
+            animate();
         },
 
 
@@ -97,7 +125,7 @@
         initCamera() {
             let camera = this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
             camera.lookAt(0, 0, 0);
-            camera.position.set(60, 60, 60);
+            camera.position.set(20, 20, 20);
         },
 
         initControls() {
@@ -125,6 +153,7 @@
 
     App.init();
 
+    window.App = App;
 </script>
 </body>
 </html>
