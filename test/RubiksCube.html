@@ -164,9 +164,9 @@
 
         getIntersectD(v1, v2) {
             return {
-                x: v1.x - v2.x,
-                y: v1.y - v2.y,
-                z: v1.z - v2.z,
+                x: v2.x - v1.x,
+                y: v2.y - v1.y,
+                z: v2.z - v1.z,
             }
         },
 
@@ -180,19 +180,29 @@
             let intersectD = this.getIntersectD(moveInfo.startInter.point, moveInfo.target.point);
             let surface = this.getTouchSurface(moveInfo.startInter.point);
             let indexMap = this.getHoverIndexMap(moveInfo.startInter.point);
-            let axis;
+            let axis, moveAxis;
             switch (surface) {
                 case 'x':
-                    axis = Math.abs(intersectD.y) < Math.abs(intersectD.z) ? 'y' : 'z';
+                    [axis, moveAxis] = (Math.abs(intersectD.y) < Math.abs(intersectD.z) ? 'yz' : 'zy').split('');
                     break;
                 case 'y':
-                    axis = Math.abs(intersectD.x) < Math.abs(intersectD.z) ? 'x' : 'z';
+                    [axis, moveAxis] = (Math.abs(intersectD.x) < Math.abs(intersectD.z) ? 'xz' : 'zx').split('');
                     break;
                 default:
-                    axis = Math.abs(intersectD.y) < Math.abs(intersectD.x) ? 'y' : 'x';
+                    [axis, moveAxis] = (Math.abs(intersectD.y) < Math.abs(intersectD.x) ? 'yx' : 'xy').split('');
             }
             let index = indexMap[axis];
-            let direction = moveInfo.startInter.point[surface] * intersectD[axis] > 0 ? -1 : 1;
+            let direction = moveInfo.startInter.point[surface] * intersectD[moveAxis] > 0 ? 1 : -1;
+            if (axis === 'x' && moveAxis === 'y') {
+                direction *= -1;
+            }
+            if (axis === 'y' && moveAxis === 'z') {
+                direction *= -1;
+            }
+            if (axis === 'z' && moveAxis === 'x') {
+                direction *= -1;
+            }
+            console.log(axis, moveAxis, intersectD[moveAxis], direction);
             return [axis, direction, index];
         },
 
@@ -234,9 +244,11 @@
             let minD = 15;
 
             let mouseMove = (e) => {
+                if (this.rotating) {
+                    return;
+                }
                 let mouseXD = e.clientX - moveInfo.startMouse.x;
                 let mouseYD = e.clientY - moveInfo.startMouse.y;
-
                 if (Math.abs(mouseXD) < minD && Math.abs(mouseYD) < minD) {
                     return;
                 }
@@ -262,7 +274,7 @@
                         y: e.clientY
                     };
                     element.addEventListener('mousemove', mouseMove);
-                    console.log(this.getHoverIndexMap(target.point));
+                    // console.log(this.getHoverIndexMap(target.point));
                 }
             });
 
