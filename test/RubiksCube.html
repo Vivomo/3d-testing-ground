@@ -284,15 +284,18 @@
             //     }
             // });
 
-
-            element.addEventListener('mouseup', () => {
+            let mouseup = () => {
                 this.controls.enabled = true;
-                if (moveInfo.end) {
-                    this.rotateByCube(moveInfo.start, moveInfo.end);
+                if (moveInfo.startInter) {
+                    // this.rotateByCube(moveInfo.start, moveInfo.end);
                     moveInfo = {}
                 }
                 element.removeEventListener('pointermove', mouseMove);
-            });
+            };
+
+            element.addEventListener('pointerup', mouseup);
+            element.addEventListener('touchend', mouseup);
+
         },
 
         addLight() {
