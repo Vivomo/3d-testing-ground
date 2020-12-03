@@ -152,7 +152,7 @@
 
         initCamera() {
             let camera = this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-            camera.position.set(20, 20, 20);
+            camera.position.set(24, 24, 24);
             camera.lookAt(0, 0, 0);
         },
 
@@ -255,7 +255,7 @@
 
                 let target = this.getHoverTarget(e);
                 if (!target) {
-                    element.removeEventListener('mousemove', mouseMove);
+                    element.removeEventListener('pointermove', mouseMove);
                     return;
                 }
                 moveInfo.target = target;
@@ -273,27 +273,29 @@
                         x: e.clientX,
                         y: e.clientY
                     };
-                    element.addEventListener('mousemove', mouseMove);
-                    // console.log(this.getHoverIndexMap(target.point));
+                    element.addEventListener('pointermove', mouseMove);
                 }
             });
+            //
+            // element.addEventListener('touchmove', (e) => {
+            //     console.log(e.touches);
+            //     if (moveInfo.startInter) {
+            //         mouseMove(e)
+            //     }
+            // });
 
 
             element.addEventListener('mouseup', () => {
                 this.controls.enabled = true;
                 if (moveInfo.end) {
                     this.rotateByCube(moveInfo.start, moveInfo.end);
-                    moveInfo = {
-                        start: null,
-                        end: null
-                    }
+                    moveInfo = {}
                 }
-                element.removeEventListener('mousemove', mouseMove);
+                element.removeEventListener('pointermove', mouseMove);
             });
         },
 
         addLight() {
-            // var light = new THREE.AmbientLight(0xffffff);
             this.scene.add(new THREE.AmbientLight(0xffffff));
         },
 
