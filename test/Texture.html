@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片材质</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+    import * as THREE from '../lib/three.module.js';
+    import {OrbitControls} from '../lib/OrbitControls.js';
+
+
+    let scene = new THREE.Scene();
+    let renderer = new THREE.WebGLRenderer({antialias: true});
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.appendChild(renderer.domElement);
+
+    let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+    camera.position.set(24, 24, 24);
+    camera.lookAt(0, 0, 0);
+
+    scene.add(new THREE.AmbientLight(0xffffff));
+    scene.add(camera);
+
+    let axesHelper = new THREE.AxesHelper(20);
+    scene.add(axesHelper);
+
+    let material = new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('../img/magic-sky.jpg'),
+        color: 0xffffff,
+        side: THREE.DoubleSide
+    });
+
+    drawCube(scene, material);
+    new OrbitControls(camera, renderer.domElement);
+
+
+    renderer.render(scene, camera);
+
+
+    function drawCube(scene, material) {
+        let cube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3), material);
+        scene.add(cube);
+        animate(cube);
+    }
+
+
+    function animate(cube){
+        let loop = () => {
+            requestAnimationFrame(loop);
+            // cube.rotation.x += 0.01;
+            // cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+        loop();
+    }
+
+</script>
+</body>
+</html>
