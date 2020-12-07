@@ -69,7 +69,9 @@
             this.scene.add(new THREE.Mesh(cube, new THREE.MeshBasicMaterial({color: 0xcccccc})));
         },
 
-
+        add(obj) {
+            this.scene.add(obj)
+        },
 
         init() {
             this.initRender();
@@ -85,6 +87,109 @@
     };
 
     App.init();
+
+    class Matchman{
+        constructor() {
+            this.blackMesh = new THREE.MeshBasicMaterial({color: 0x000000});
+            this.redMesh = new THREE.MeshBasicMaterial({color: 0xdd0000});
+            let man = new THREE.Group();
+
+            let trunk = this.trunk = this.createTrunk();
+
+            let pelvis = this.createPelvis();
+
+            let leftShoulder = this.createShoulder();
+
+            let rightShoulder = this.createShoulder();
+            rightShoulder.rotation.z = Math.PI;
+
+            let leftLeg = this.createLeg();
+            let rightLeg = this.createLeg();
+            rightLeg.position.set(0.2, 0, 0);
+
+            trunk.add(this.createHead());
+            trunk.add(pelvis);
+            trunk.add(leftShoulder);
+            trunk.add(rightShoulder);
+            pelvis.add(leftLeg);
+            pelvis.add(rightLeg);
+            man.add(trunk);
+            man.position.set(0, 4, 0);
+            return man;
+        }
+
+        // 躯
+        createTrunk() {
+            return new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 2), this.blackMesh);
+        }
+
+        // 胯
+        createPelvis() {
+            let pelvis = new THREE.Mesh(new THREE.SphereGeometry(0.25), this.blackMesh);
+            pelvis.position.set(0, -1, 0);
+            return pelvis;
+        }
+
+        // 头
+        createHead() {
+            let head = new THREE.Mesh(new THREE.SphereGeometry(0.3), this.redMesh);
+            head.position.set(0, 1, 0);
+            return head;
+        }
+
+        // 肩
+        createShoulder() {
+            let shoulder = new THREE.Group();
+            shoulder.position.set(0, 0.5, 0);
+
+            let upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1), this.blackMesh);
+            upperArm.position.set(-0.5, 0, 0);
+            upperArm.rotation.z = Math.PI / 2;
+            shoulder.add(upperArm);
+
+            let elbow = new THREE.Mesh(new THREE.SphereGeometry(0.15), this.blackMesh);
+            elbow.position.set(0, 0.5, 0);
+            upperArm.add(elbow);
+
+            let forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1), this.blackMesh);
+            forearm.position.set(0, 0.5, 0);
+            // forearm.rotation.z = Math.PI / 2;
+            elbow.add(forearm);
+
+            let hand = new THREE.Mesh(new THREE.SphereGeometry(0.1), this.blackMesh);
+            hand.position.set(0, 0.5, 0);
+            forearm.add(hand);
+
+            return shoulder;
+        }
+
+        // 腿
+        createLeg() {
+            let leg = new THREE.Group();
+            // thigh.position.set(0, -1, 0);
+
+            let thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.2), this.blackMesh);
+            thigh.position.set(-0.1, -0.6, 0);
+            leg.add(thigh);
+
+            let knee = new THREE.Mesh(new THREE.SphereGeometry(0.15), this.blackMesh);
+            knee.position.set(0, -0.6, 0);
+            thigh.add(knee);
+
+            let shank = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.2), this.blackMesh);
+            shank.position.set(0, -0.6, 0);
+            knee.add(shank);
+
+            let foot = new THREE.Mesh(new THREE.SphereGeometry(0.1), this.blackMesh);
+            foot.position.set(0, -0.6, 0);
+            shank.add(foot);
+
+            return leg;
+        }
+    }
+
+    let matchman = new Matchman();
+    App.add(matchman);
 
 </script>
 </body>
