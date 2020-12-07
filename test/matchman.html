@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>fight</title>
+    <title>matchman</title>
     <style>
         body {margin: 0;}
         canvas {display: block;}
@@ -90,7 +90,7 @@
 
     class Matchman{
         constructor() {
-            this.mainMesh = new THREE.MeshBasicMaterial({color: 0x000000});
+            this.mainMesh = new THREE.MeshBasicMaterial({color: 0x333333});
             this.themeMesh = new THREE.MeshBasicMaterial({color: 0xdd0000});
             let body = this.body = new THREE.Group();
 
@@ -98,22 +98,23 @@
 
             let pelvis = this.createPelvis();
 
-            let leftShoulder = this.createShoulder();
+            this.leftShoulder = this.createShoulder();
+            this.leftShoulder.position.x = -0.2;
+            this.rightShoulder = this.createShoulder();
+            this.rightShoulder.rotation.z = Math.PI;
+            this.rightShoulder.position.x = 0.2;
 
-            let rightShoulder = this.createShoulder();
-            rightShoulder.rotation.z = Math.PI;
-
-            let leftLeg = this.createLeg();
-            leftLeg.position.set(-0.1, 0, 0);
-            let rightLeg = this.createLeg();
-            rightLeg.position.set(0.1, 0, 0);
+            this.leftLeg = this.createLeg();
+            this.leftLeg.position.set(-0.1, 0, 0);
+            this.rightLeg = this.createLeg();
+            this.rightLeg.position.set(0.1, 0, 0);
 
             trunk.add(this.createHead());
             trunk.add(pelvis);
-            trunk.add(leftShoulder);
-            trunk.add(rightShoulder);
-            pelvis.add(leftLeg);
-            pelvis.add(rightLeg);
+            trunk.add(this.leftShoulder);
+            trunk.add(this.rightShoulder);
+            pelvis.add(this.leftLeg);
+            pelvis.add(this.rightLeg);
             body.add(trunk);
             body.position.set(0, 4, 0);
         }
@@ -139,7 +140,7 @@
 
         // 肩
         createShoulder() {
-            let shoulder = new THREE.Group();
+            let shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.18), this.mainMesh);
             shoulder.position.set(0, 0.5, 0);
 
             let upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1), this.mainMesh);
@@ -149,6 +150,8 @@
 
             let elbow = new THREE.Mesh(new THREE.SphereGeometry(0.15), this.mainMesh);
             elbow.position.set(0, 0.5, 0);
+            // elbow.rotation.x = 0.3;
+            shoulder.elbow = elbow;
             upperArm.add(elbow);
 
             let forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1), this.mainMesh);
@@ -173,6 +176,7 @@
 
             let knee = new THREE.Mesh(new THREE.SphereGeometry(0.15), this.mainMesh);
             knee.position.set(0, -0.6, 0);
+            leg.knee = knee;
             thigh.add(knee);
 
             let shank = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.2), this.mainMesh);
@@ -182,8 +186,52 @@
             let foot = new THREE.Mesh(new THREE.SphereGeometry(0.1), this.mainMesh);
             foot.position.set(0, -0.6, 0);
             shank.add(foot);
-
             return leg;
+        }
+
+        // 原地踏步
+        markTime(){
+            let {leftLeg, rightLeg, leftShoulder, rightShoulder} = this;
+            let left = true;
+            let raise = true;
+            let minRad = -Math.PI / 2;
+            let maxRad = 0;
+            let speed = 0.06;
+            leftShoulder.rotation.z = Math.PI / 2;
+            rightShoulder.rotation.z = Math.PI / 2;
+
+            let loop = () => {
+                let leg = left ? leftLeg : rightLeg;
+                let rad = leg.rotation.x;
+                let tempRad;
+                if (raise) {
+                    tempRad = rad - speed;
+                    if (tempRad < minRad) {
+                        tempRad = minRad;
+                        raise = !raise;
+                    }
+                } else {
+                    tempRad = rad + speed;
+                    if (tempRad > maxRad) {
+                        tempRad = maxRad;
+                        raise = !raise;
+                        left = !left;
+                    }
+                }
+                let shoulderRad = tempRad  * 0.6
+                if (left) {
+                    rightShoulder.rotation.x = shoulderRad;
+                    leftShoulder.rotation.x = -shoulderRad;
+                } else {
+                    rightShoulder.rotation.x = -shoulderRad;
+                    leftShoulder.rotation.x = shoulderRad;
+                }
+                leg.rotation.x = tempRad;
+                leg.knee.rotation.x = tempRad * -1.5;
+                requestAnimationFrame(loop);
+            };
+
+            loop();
         }
 
         rotate() {
@@ -197,6 +245,9 @@
 
     let matchman = new Matchman();
     App.add(matchman.body);
+    window.matchman = matchman;
+
+    matchman.markTime();
 
 </script>
 </body>
