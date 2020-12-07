@@ -92,7 +92,7 @@
         constructor() {
             this.mainMesh = new THREE.MeshBasicMaterial({color: 0x000000});
             this.themeMesh = new THREE.MeshBasicMaterial({color: 0xdd0000});
-            let man = new THREE.Group();
+            let body = this.body = new THREE.Group();
 
             let trunk = this.trunk = this.createTrunk();
 
@@ -114,9 +114,8 @@
             trunk.add(rightShoulder);
             pelvis.add(leftLeg);
             pelvis.add(rightLeg);
-            man.add(trunk);
-            man.position.set(0, 4, 0);
-            return man;
+            body.add(trunk);
+            body.position.set(0, 4, 0);
         }
 
         // 躯
@@ -186,10 +185,18 @@
 
             return leg;
         }
+
+        rotate() {
+            let loop = () => {
+                requestAnimationFrame(loop);
+                this.body.rotation.y += 0.3;
+            }
+            loop();
+        }
     }
 
     let matchman = new Matchman();
-    App.add(matchman);
+    App.add(matchman.body);
 
 </script>
 </body>
