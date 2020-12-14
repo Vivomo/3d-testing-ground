@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>illusion</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+    import * as THREE from '../lib/three.module.js';
+    import App from '../lib/render.js';
+
+    App.init({axes: false});
+
+    App.setColor(0x333333);
+
+    let white = new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide});
+    let black = new THREE.MeshBasicMaterial({color: 0x000000, side: THREE.DoubleSide});
+
+    let createRing = () => {
+        let ring = new THREE.Group();
+        ring.add(new THREE.Mesh(new THREE.RingGeometry(0.3, 0.5, 64, 4, 0, Math.PI), black));
+        ring.add(new THREE.Mesh(new THREE.RingGeometry(0.3, 0.5, 64, 4, Math.PI, Math.PI), white));
+        return ring;
+    };
+
+    let composedRing = (...position) => {
+        let cRing = new THREE.Group();
+        let r1 = createRing();
+        let r2 = createRing();
+        let r3 = createRing();
+
+        r2.rotation.z = Math.PI / 4;
+        r2.position.x = 0.01
+        r2.position.z = -0.01
+        r3.rotation.z = Math.PI / -4;
+        r3.position.x = -0.01
+        r3.position.z = -0.02
+
+        cRing.add(r1, r2, r3);
+        // cRing.add(r1);
+        // cRing.add(r2);
+        // cRing.add(r3);
+
+        cRing.position.set(...position);
+        return cRing;
+    };
+
+    let createIllusion = () => {
+        let group = new THREE.Group();
+        let l = 4;
+        let density = 5;
+        let points1 = [
+            [l, l, l],
+            [-l, l, l],
+            [l, l, -l],
+            [-l, l, -l],
+        ];
+        let rings = [];
+        for (let i = 0; i < density; i++) {
+            for (let point of points1) {
+                rings.push(composedRing(point[0], point[1] - i * l * 2 / density, point[2]))
+            }
+        }
+        let points2 = [
+            [l, l, l],
+            [l, -l, l],
+            [l, l, -l],
+            [l, -l, -l],
+        ];
+        for (let i = 0; i < density; i++) {
+            for (let point of points2) {
+                rings.push(composedRing(point[0] - i * l * 2 / density, point[1], point[2]));
+            }
+        }
+        let points3 = [
+            [l, l, l],
+            [l, -l, l],
+            [-l, l, l],
+            [-l, -l, l],
+        ];
+        for (let i = 0; i < density; i++) {
+            for (let point of points3) {
+                rings.push(composedRing(point[0], point[1], point[2] - i * l * 2 / density));
+            }
+        }
+        rings.push(composedRing(-l, -l, -l));
+        console.log(rings.length);
+        for (let ring of rings.slice()) {
+            group.add(ring);
+        }
+        return group;
+    }
+    let ringsGroup = createIllusion();
+    let loop = () => {
+        for (let ring of ringsGroup.children) {
+            ring.rotation.z -= 0.45;
+        }
+        requestAnimationFrame(loop);
+    }
+    loop();
+    App.add(ringsGroup);
+    // App.add(composedRing(0, 0, 0));
+</script>
+</body>
+</html>
