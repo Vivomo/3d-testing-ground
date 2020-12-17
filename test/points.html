@@ -26,10 +26,12 @@
     const length = 160;
     const rotateY = new THREE.Matrix4().makeRotationY(0.005);
 
+    let parameters = {size: pointSize, vertexColors: true};
+
     init();
     animate();
 
-    function generatePointCloudGeometry(color, width, length) {
+    function generatePointsGeometry(color, width, length) {
 
         const geometry = new THREE.BufferGeometry();
         const numPoints = width * length;
@@ -71,15 +73,15 @@
     }
 
     function generatePoint(color, width, length) {
-        const geometry = generatePointCloudGeometry(color, width, length);
-        const material = new THREE.PointsMaterial({size: pointSize, vertexColors: true});
+        const geometry = generatePointsGeometry(color, width, length);
+        const material = new THREE.PointsMaterial(parameters);
         return new THREE.Points(geometry, material);
 
     }
 
     function generateIndexedPoint(color, width, length) {
 
-        const geometry = generatePointCloudGeometry(color, width, length);
+        const geometry = generatePointsGeometry(color, width, length);
         const numPoints = width * length;
         const indices = new Uint16Array(numPoints);
 
@@ -93,7 +95,7 @@
 
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-        const material = new THREE.PointsMaterial({size: pointSize, vertexColors: true});
+        const material = new THREE.PointsMaterial(parameters);
 
         return new THREE.Points(geometry, material);
 
@@ -101,7 +103,7 @@
 
     function generateIndexedWithOffsetPoint(color, width, length) {
 
-        const geometry = generatePointCloudGeometry(color, width, length);
+        const geometry = generatePointsGeometry(color, width, length);
         const numPoints = width * length;
         const indices = new Uint16Array(numPoints);
 
@@ -116,7 +118,7 @@
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
         geometry.addGroup(0, indices.length);
 
-        const material = new THREE.PointsMaterial({size: pointSize, vertexColors: true});
+        const material = new THREE.PointsMaterial(parameters);
 
         return new THREE.Points(geometry, material);
 
