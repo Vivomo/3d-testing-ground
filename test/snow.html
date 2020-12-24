@@ -13,11 +13,23 @@
     import App from '../lib/render.js';
     import * as THREE from '../lib/three.module.js';
 
-    App.init({axes: false});
+    App.init({light: false});
+
+    let mpm = new THREE.MeshPhongMaterial({
+        color: 0x333333,
+        flatShading: true
+    });
+
+    let stage = new THREE.Mesh(new THREE.CubeGeometry(100, 1, 100), mpm);
+    App.add(stage);
+
+    let light = new THREE.DirectionalLight(0x333333, 100, 100);
+    light.position.set(30, 30, 30);
+    App.add(light);
 
     const SnowDegree = Math.PI / 3;
     const Decline = 2 / 3;
-    const SnowSize = 0.02;
+    const SnowBaseSize = 0.2;
 
     let getNextPoints = (points, r) => {
         let nextPoints = [];
@@ -35,15 +47,17 @@
     let createSnow = (r = 36, deep = 3) => {
         let material = new THREE.MeshBasicMaterial({
             color: 0xffffff,
+            opacity: 0.8,
+            transparent: true
         });
         let count = 0;
         let group = new THREE.Group();
         let points = [{x: 0, y: 0}];
+        let size = SnowBaseSize;
         for (let d = 1; d <= deep; d++) {
-            r = r / 3;
             for (let point of points) {
                 for (let i = 0; i < 3; i++) {
-                    let cube = new THREE.Mesh(new THREE.CubeGeometry(r, SnowSize, SnowSize), material);
+                    let cube = new THREE.Mesh(new THREE.CubeGeometry(r, size, size), material);
                     cube.rotation.z = SnowDegree * i;
                     cube.position.x = point.x;
                     cube.position.y = point.y;
@@ -51,14 +65,19 @@
                     count++;
                 }
             }
-            points = getNextPoints(points, r * Decline)
+            points = getNextPoints(points, r * Decline / 2);
+            r /= 3;
+            size *= Decline;
         }
         console.log(count);
         return group;
     }
-    let snow = createSnow(36, 6);
+    let snow = createSnow(36, 5);
+    snow.position.y = 18.5;
+    snow.rotation.z = Math.PI / 6;
+
     let animate = () => {
-        snow.rotation.x += 0.01;
+        // snow.rotation.x += 0.01;
         snow.rotation.y += 0.01;
         requestAnimationFrame(animate);
     };
