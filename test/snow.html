@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>snow</title>
+    <style>
+        body {margin: 0;}
+        canvas {display: block;}
+    </style>
+</head>
+<body>
+<script type="module">
+    import App from '../lib/render.js';
+    import * as THREE from '../lib/three.module.js';
+
+    App.init({axes: false});
+
+    const SnowDegree = Math.PI / 3;
+    const Decline = 2 / 3;
+    const SnowSize = 0.02;
+
+    let getNextPoints = (points, r) => {
+        let nextPoints = [];
+        for (let point of points) {
+            for (let i = 0; i < 6; i++) {
+                nextPoints.push({
+                    x: point.x + r * Math.cos(SnowDegree * i),
+                    y: point.y + r * Math.sin(SnowDegree * i),
+                })
+            }
+        }
+        return nextPoints;
+    };
+
+    let createSnow = (r = 36, deep = 3) => {
+        let material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+        });
+        let count = 0;
+        let group = new THREE.Group();
+        let points = [{x: 0, y: 0}];
+        for (let d = 1; d <= deep; d++) {
+            r = r / 3;
+            for (let point of points) {
+                for (let i = 0; i < 3; i++) {
+                    let cube = new THREE.Mesh(new THREE.CubeGeometry(r, SnowSize, SnowSize), material);
+                    cube.rotation.z = SnowDegree * i;
+                    cube.position.x = point.x;
+                    cube.position.y = point.y;
+                    group.add(cube);
+                    count++;
+                }
+            }
+            points = getNextPoints(points, r * Decline)
+        }
+        console.log(count);
+        return group;
+    }
+    let snow = createSnow(36, 6);
+    let animate = () => {
+        snow.rotation.x += 0.01;
+        snow.rotation.y += 0.01;
+        requestAnimationFrame(animate);
+    };
+    animate();
+    App.add(snow);
+
+</script>
+</body>
+</html>
